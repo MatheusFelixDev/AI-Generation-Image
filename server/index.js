@@ -19,6 +19,8 @@ app.get('/', async (req, res) => {
     res.send('Hello from DALL-E');
 })
 
+const port = process.env.PORT || 8080
+
 const startServer = async () => {
     try {
         connectDB(process.env.MONGODB_URL);
