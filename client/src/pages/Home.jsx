@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 import { Loader, Card, FormField } from '../components';
+import Hero from '../components/Hero';
 
 const RenderCards = ({ data, title }) => {
     if (data?.length > 0) {
@@ -70,8 +71,9 @@ const Home = () => {
     return (
 
         <section className="max-w-7xl mx-auto">
-            <div  >
-                <h1 className="font-extrabold text-[#222328] text-[32px]">
+            <Hero />
+            <div >
+                <h1 className="font-extrabold text-[#222328] text-[32px] mt-5">
                     The Community Showcase
                 </h1>
 
