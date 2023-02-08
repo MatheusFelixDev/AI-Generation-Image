@@ -12,7 +12,7 @@ const Hero = () => {
                 <p className="text-gray-300 text-2xl font-bold my-3 mx-auto py-3" >our AI imaging app!!</p>
 
                 <Link to='create-post'>
-                    <button className="bg-blue-500 text-white my-6 mx-auto sm:px-8 px-4 py-4 rounded"
+                    <button className="bg-[#2faaea] text-white my-6 mx-auto sm:px-8 px-4 py-4 rounded"
                         href='create-post'
                     >
                         Try it now 🚀
