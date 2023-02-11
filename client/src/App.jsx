@@ -1,18 +1,19 @@
 import React from 'react';
 import { BrowserRouter, Link, Route, Routes } from 'react-router-dom';
 
-import { logo } from './assets'
+import { logo, logoWS } from './assets'
 import { Home, CreatePost } from './pages'; 
 const App = () => {
   
   return(
     <BrowserRouter>
       <header className='w-full flex justify-between items-center
-                        bg-white sm:px-8 px-4 py-4 border-b border-b-[#e6ebf4]'>
+                        bg-white sm:px-8 px-4  border-b border-b-[#e6ebf4]'>
+        
         <Link to='/'>
-          <img src={logo} alt='logo' className='w-28 object-contain' />   
+          <img src={logoWS} alt='logo' className='w-20 object-contain' />
         </Link>
-
+        <h1 className='font-extrabold text-2xl'>WebSession.</h1>
         <Link to='create-post'
           className='font-inter font-medium bg-[#2faaea]
                     text-white px-4 py-2 rounded-md'>
@@ -30,10 +31,10 @@ const App = () => {
       </main>
 
       <footer className='w-full flex justify-between items-center
-                        bg-white sm:px-8 px-4 py-4 border-t border-t-[#e6ebf4]'>
+                        bg-white sm:px-8 px-4 border-t border-t-[#e6ebf4]'>
         
         <Link to='/'>
-          <img src={logo} alt='logo' className='w-28 object-contain' />   
+          <img src={logoWS} alt='logo'  className='w-28 object-contain' />   
         </Link>
 
         <div className='font-inter font-medium 
