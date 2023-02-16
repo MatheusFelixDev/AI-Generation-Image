@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,  } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { preview } from '../assets';
@@ -12,12 +12,22 @@ const CreatePost = () => {
     name: '',
     prompt: '',
     photo: '',
+    resolution: '',
+    
   });
 
   const [generatingImg, setGeneratingImg] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((form) => ({
+      ...form,
+      [name]: value,
+    }));
+  };
+
+  
 
   const handleSurpriseMe = () => {
     const randomPrompt = getRandomPrompt(form.prompt);
@@ -25,19 +35,20 @@ const CreatePost = () => {
   };
 
   const generateImage = async () => {
-    if (form.prompt) {
+    if (form.prompt && form.resolution) {
       try {
         setGeneratingImg(true);
-        const response = await fetch('https://server-ai-generation-image.vercel.app/api/v1/dalle', {
+        const response = await fetch('http://localhost:8080/api/v1/dalle', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
             prompt: form.prompt,
+            resolution: form.resolution,
           }),
         });
-
+  
         const data = await response.json();
         setForm({ ...form, photo: `data:image/jpeg;base64,${data.photo}` });
       } catch (err) {
@@ -57,7 +68,7 @@ const CreatePost = () => {
       setLoading(true);
 
       try {
-        const response = await fetch('https://server-ai-generation-image.vercel.app/api/v1/post', {
+        const response = await fetch('http://localhost:8080/api/v1/post', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -107,7 +118,22 @@ const CreatePost = () => {
             handleChange={handleChange}
             isSurpriseMe
             handleSurpriseMe={handleSurpriseMe}
-          />
+            />
+
+
+            <FormField
+              labelName='Resolution'
+              type='select'
+              name='resolution'
+              value={form.resolution}
+              handleChange={handleChange}
+              options={[
+                { label: '1024x1024', value: '1024x1024' },
+                { label: '512x512', value: '512x512' },
+                { label: '256x256', value: '256x256' },
+              ]}
+            />
+
 
           <div className="relative bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 w-64 p-3 h-64 flex justify-center items-center">
             { form.photo ? (
