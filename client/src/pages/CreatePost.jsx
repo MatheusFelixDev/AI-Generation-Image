@@ -11,8 +11,9 @@ const CreatePost = () => {
   const [form, setForm] = useState({
     name: '',
     prompt: '',
-    photo: '',
+    photo: [],
     resolution: '',
+    numberImage: 0,
     
   });
 
@@ -28,29 +29,38 @@ const CreatePost = () => {
   };
 
   
-
   const handleSurpriseMe = () => {
     const randomPrompt = getRandomPrompt(form.prompt);
     setForm({ ...form, prompt: randomPrompt });
   };
 
   const generateImage = async () => {
-    if (form.prompt && form.resolution) {
+    if (form.prompt && form.resolution && form.numberImage) {
       try {
         setGeneratingImg(true);
         const response = await fetch('https://server-ai-generation-image.vercel.app/api/v1/dalle', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            prompt: form.prompt,
-            resolution: form.resolution,
-          }),
-        });
-  
-        const data = await response.json();
-        setForm({ ...form, photo: `data:image/jpeg;base64,${data.photo}` });
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    prompt: form.prompt,
+    resolution: form.resolution,
+    numberImage: parseInt(form.numberImage),
+  }),
+});
+
+const data = await response.json();
+if (data && data.image) {
+  const newPhotos = data.image.map((image) => `data:image/jpeg;base64,${image.data}`);
+  setForm((form) => ({
+    ...form,
+    photo: newPhotos,
+}));
+} else {
+  alert('API did not return expected data');
+}
+       
       } catch (err) {
         alert(err);
       } finally {
@@ -61,33 +71,39 @@ const CreatePost = () => {
     }
   };
 
+  console.log(form.photo)
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (form.prompt && form.photo) {
       setLoading(true);
-
+  
+      console.log(form) 
       try {
         const response = await fetch('https://server-ai-generation-image.vercel.app/api/v1/post', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(form)
-        })
-
+          body: JSON.stringify(form),
+        });
+        
         await response.json();
         navigate('/');
-        
       } catch (err) {
-        alert(err)
+        alert(err);
       } finally {
         setLoading(false);
       }
     } else {
-      alert('Please enter a prompt and generate an image');
+      alert('Please enter a prompt and generate at least one image');
     }
   };
+
+  
+  
+  
 
   return (
     <section className="max-w-7xl mx-auto">
@@ -128,40 +144,61 @@ const CreatePost = () => {
               value={form.resolution}
               handleChange={handleChange}
               options={[
+                { label: '', value: '' },
                 { label: '1024x1024', value: '1024x1024' },
                 { label: '512x512', value: '512x512' },
                 { label: '256x256', value: '256x256' },
               ]}
             />
 
+             <FormField
+              labelName='number Image'
+              type='select'
+              name='numberImage'
+              value={form.numberImage}
+              handleChange={handleChange}
+              options={[
+                { label: '', value: '' },
+                { label: '1', value: '1' },
+                { label: '2', value: '2' },
+                { label: '4', value: '4'}
+              ]}
+            />
 
-          <div className="relative bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 w-64 p-3 h-64 flex justify-center items-center">
-            { form.photo ? (
-              <img
-                src={form.photo}
-                alt={form.prompt}
-                className="w-full h-full object-contain"
-              />
-            ) : (
-              <img
-                src={preview}
-                alt="preview"
-                className="w-9/12 h-9/12 object-contain opacity-40"
-              />
-            )}
 
+          <div className="relative bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full p-3 h-full flex justify-center items-center">
+          {form.photo.length === 0 && (
+  <img
+    src={preview}
+    alt="preview"
+    className="rounded-md w-full h-80 object-cover"
+  />
+)}
+
+              
+<div className="my-4 flex flex-wrap gap-2 justify-center items-center">
+  {form.photo.map((imgData, index) => (
+    <div key={index} className="w-1/2 md:w-1/3 lg:w-1/4">
+      <img src={imgData} alt={`Generated image ${index + 1}`} className="w-full" />
+    </div>
+  ))}
+</div>
+              
             {generatingImg && (
               <div className="absolute inset-0 z-0 flex justify-center items-center bg-[rgba(0,0,0,0.5)] rounded-lg">
                 <Loader />
               </div>
             )}
           </div>
+            
+
         </div>
 
         <div className="mt-5 flex gap-5">
           <button
             type="button"
-            onClick={generateImage}
+              onClick={generateImage}
+              disabled={generatingImg}
             className=" text-white bg-green-700 font-medium rounded-md text-sm w-full sm:w-auto px-5 py-2.5 text-center"
           >
             {generatingImg ? 'Generating...' : 'Generate'}

@@ -18,18 +18,27 @@ router.route('/').get((req, res) => {
 
 router.route('/').post(async (req, res) => {
   try {
-    const { prompt, resolution} = req.body;
+    const { prompt, resolution, numberImage} = req.body;
     
+    console.log(`Pedindo ${numberImage} imagem(es)`);
 
     const aiResponse = await openai.createImage({
       prompt,
-      n: 1,
+      n: numberImage,
       size: resolution,
       response_format: 'b64_json',
     });
 
-    const image = aiResponse.data.data[0].b64_json;
-    res.status(200).json({ photo: image });
+    console.log(`Gerando ${numberImage} imagem(es)`);
+
+    const image = aiResponse.data.data.map((data) => {
+      return {
+        data: data.b64_json
+      }
+    });
+    
+    res.status(200).json({image});
+    
   } catch (error) {
     console.error(error);
     res.status(500).send(error?.response.data.error.message || 'Something went wrong');

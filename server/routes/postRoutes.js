@@ -26,21 +26,31 @@ router.route('/').get(async (req, res) => {
 
 //CREATE A POST
 
+//CREATE A POST
+
 router.route('/').post(async (req, res) => {
     try {
         const { name, prompt, photo } = req.body;
-        const photoUrl = await cloudinary.uploader.upload(photo);
-    
-        const newPost = await Post.create({
-            name,
-            prompt,
-            photo: photoUrl.url,
-        })
-    
-        res.status(201).json({success: true, data: newPost});
+        
+        console.log(name, prompt, photo);
+  
+      // Loop through array of files and upload each one individually
+      const photoUrls = await Promise.all(photo.map(async (file) => {
+        const photoUrl = await cloudinary.uploader.upload(file);
+        return photoUrl.url;
+      }));
+  
+      const newPost = await Post.create({
+        name,
+        prompt,
+        photo: photoUrls, // Store array of photo URLs in database
+      });
+  
+      res.status(201).json({ success: true, data: newPost });
     } catch (error) {
-        res.status(500).json({success: false, message: error});
+      res.status(500).json({ success: false, message: error });
     }
-});
+  });
+  
 
 export default router;
