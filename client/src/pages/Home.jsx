@@ -1,95 +1,101 @@
-        import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Loader, Card, FormField, Hero } from '../components';
 
-        import { Loader, Card, FormField, Hero, } from '../components';
+const RenderCards = ({ data, title, showMore, setShowMore }) => {
+  const [limit, setLimit] = useState(5);
 
+  const handleShowMore = () => {
+    setLimit(limit + 5);
+    setShowMore(true);
+  };
 
-        const RenderCards = ({ data, title, showMore, setShowMore }) => {
-            const [limit, setLimit] = useState(5);
-        
-            const handleShowMore = () => {
-            setLimit(limit + 5);
-            setShowMore(true);
-            };
-        
-            if (data?.length > 0) {
-            return (
-                <>
-                {data.slice(0, limit).map((post) => <Card key={post._id} {...post} />)}
-                {limit < data.length && (
-                    <button
-                    className="bg-[#2faaea] text-white my-6 mx-auto sm:px-8 px-4 py-4 rounded"
-                    onClick={handleShowMore}
-                    >
-                    Show More
-                    </button>
-                )}
-                </>
-            );
-            }
-        
-            return (
-            <h2 className="mt-5 font-bold text-[#6449ff] text-xl uppercase">
-                {title}
-            </h2>
-            );
-        };
+  if (data?.length > 0) {
+    return (
+      <>
+        {data.slice(0, limit).map((post) => (
+          <Card key={post._id} {...post} />
+        ))}
+        {limit < data.length && (
+          <button
+            className="bg-[#2faaea] text-white my-6 mx-auto sm:px-8 px-4 py-4 rounded"
+            onClick={handleShowMore}
+          >
+            Show More
+          </button>
+        )}
+      </>
+    );
+  }
 
+  return (
+    <h2 className="mt-5 font-bold text-[#6449ff] text-xl uppercase">
+      {title}
+    </h2>
+  );
+};
 
-        const Home = () => {
-            const [loading, setLoading] = useState(false);
-            const [allPosts, setAllPosts] = useState(null);
+const Home = () => {
+  const [loading, setLoading] = useState(false);
+  const [allPosts, setAllPosts] = useState(null);
 
+  const [searchText, setSearchText] = useState('');
+  const [searchedResults, setSearchedResults] = useState(null);
+  const [searchTimeout, setSearchTimeout] = useState(null);
 
-            const [searchText, setSearchText] = useState('');
-            const [searchedResults, setSearchedResults] = useState(null);
-            const [searchTimeout, setSearchTimeout] = useState(null);
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
 
-            
+  useEffect(() => {
+    const fetchPosts = async () => {
+      setLoading(true);
 
-            
+      try {
+        const response = await fetch(
+          `https://server-ai-generation-image.vercel.app/api/v1/post?page=${page}&perPage=${perPage}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
 
-            useEffect(() => {
-                const fetchPosts = async () => {
-                    setLoading(true);
+        if (response.ok) {
+          const result = await response.json();
 
-                    try {
-                        const response = await fetch('https://server-ai-generation-image.vercel.app/api/v1/post', {
-                            method: 'GET',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                        })
+          setAllPosts(result.data.reverse());
+        }
+      } catch (error) {
+        alert(error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-                        if (response.ok) {
-                            const result = await response.json();
+    fetchPosts();
+  }, [page, perPage]);
 
-                            setAllPosts(result.data.reverse());
-                        }
-                        
-                    } catch (error) {
-                        alert(error)
-                    } finally {
-                        setLoading(false)
-                    }
-                }
+  const handleSearchChange = (e) => {
+    clearTimeout(searchTimeout);
 
-                fetchPosts();
-            }, []);
+    setSearchText(e.target.value);
 
-            const handleSearchChange = (e) => {
-                clearTimeout(searchTimeout);
+    setSearchTimeout(
+      setTimeout(() => {
+        const searchResults = allPosts.filter(
+          (item) =>
+            item.name.toLowerCase().includes(searchText.toLowerCase()) ||
+            item.prompt.toLowerCase().includes(searchText.toLowerCase())
+        );
 
-                setSearchText(e.target.value);
+        setSearchedResults(searchResults);
+      }, 500)
+    );
+  };
 
-                setSearchTimeout(
-                    setTimeout(() => {
-                        const searchResults = allPosts.filter((item) => item.name.toLowerCase().includes(searchText.toLowerCase()) ||
-                            item.prompt.toLowerCase().includes(searchText.toLowerCase()));
-            
-                        setSearchedResults(searchResults);
-                    }, 500)
-                );
-            }
+  const handleShowMore = () => {
+    setPage(page + 1);
+  };
 
             return (
 

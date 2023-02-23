@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { preview } from '../assets';
 import { getRandomPrompt } from '../utils';
 import { FormField, Loader } from '../components';
+import { LogotypeList, PixelartList, OrientalartList } from '../constants';
+
 
 const CreatePost = () => {
   const navigate = useNavigate();
@@ -14,8 +16,19 @@ const CreatePost = () => {
     photo: [],
     resolution: '',
     numberImage: 0,
+    styleImage: '',
     
   });
+
+  const styleOptions = [
+    { value: '', label: 'None' },
+    ...LogotypeList,
+    ...PixelartList,
+    ...OrientalartList,
+  ];
+
+
+  
 
   const [generatingImg, setGeneratingImg] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -27,6 +40,7 @@ const CreatePost = () => {
       [name]: value,
     }));
   };
+
 
   
   const handleSurpriseMe = () => {
@@ -44,7 +58,7 @@ const CreatePost = () => {
     'Content-Type': 'application/json',
   },
   body: JSON.stringify({
-    prompt: form.prompt,
+    prompt: (form.prompt + form.styleImage),
     resolution: form.resolution,
     numberImage: parseInt(form.numberImage),
   }),
@@ -101,9 +115,26 @@ if (data && data.image) {
     }
   };
 
-  
-  
-  
+  const [selectedArray, setSelectedArray] = useState([]);
+
+  const handleChangeArray = (event) => {
+    const selectedValue = event.target.value;
+    switch (selectedValue) {
+      case 'logotype':
+        setSelectedArray(LogotypeList);
+        break;
+      case 'pixelart':
+        setSelectedArray(PixelartList);
+        break;
+      case 'orientalart':
+        setSelectedArray(OrientalartList);
+        break;
+      default:
+        setSelectedArray([]);
+        break;
+    }
+  };
+
 
   return (
     <section className="max-w-7xl mx-auto">
@@ -136,6 +167,36 @@ if (data && data.image) {
             handleSurpriseMe={handleSurpriseMe}
             />
 
+<>
+          <FormField
+            labelName='Image Style'
+            type='select'
+            value={form.styleImage} 
+            handleChange={handleChange}
+            name='styleImage'
+            options={selectedArray}
+          />
+
+          <div className="flex flex-col md:flex-row md:items-center justify-between">
+            <label className="inline-flex items-center w-1/2  ">
+              <input type="radio" className="form-radio text-blue-500" name="arrayType" value="none" onChange={handleChangeArray} defaultChecked/>
+              <span className="ml-2">none</span>
+            </label>
+            <label className="inline-flex items-center w-1/2 ">
+              <input type="radio" className="form-radio text-blue-500" name="arrayType" value="logotype" onChange={handleChangeArray} />
+              <span className="ml-2">Logotype</span>
+            </label>
+            <label className="inline-flex items-center w-1/2 ">
+              <input type="radio" className="form-radio text-blue-500" name="arrayType" value="pixelart" onChange={handleChangeArray} />
+              <span className="ml-2">Pixel art</span>
+            </label>
+            <label className="inline-flex items-center w-1/2 ">
+              <input type="radio" className="form-radio text-blue-500" name="arrayType" value="orientalart" onChange={handleChangeArray} />
+              <span className="ml-2">Oriental art</span>
+            </label>
+          </div>
+
+    </> 
 
             <FormField
               labelName='Resolution'
@@ -145,12 +206,12 @@ if (data && data.image) {
               handleChange={handleChange}
               options={[
                 { label: '', value: '' },
-                { label: '1024x1024', value: '1024x1024' },
                 { label: '512x512', value: '512x512' },
                 { label: '256x256', value: '256x256' },
               ]}
             />
 
+            
              <FormField
               labelName='number Image'
               type='select'
@@ -165,13 +226,17 @@ if (data && data.image) {
               ]}
             />
 
+            
+
+
+            
 
           <div className="relative bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full p-3 h-full flex justify-center items-center">
           {form.photo.length === 0 && (
   <img
     src={preview}
     alt="preview"
-    className="rounded-md w-full h-80 object-cover"
+    className="rounded-md w-80 h-80 object-cover"
   />
 )}
 
@@ -179,7 +244,7 @@ if (data && data.image) {
 <div className="my-4 flex flex-wrap gap-2 justify-center items-center">
   {form.photo.map((imgData, index) => (
     <div key={index} className="w-1/2 md:w-1/3 lg:w-1/4">
-      <img src={imgData} alt={`Generated image ${index + 1}`} className="w-full" />
+      <img src={imgData} alt={`Generated image ${index + 1}`} className="w-full h-full" />
     </div>
   ))}
 </div>

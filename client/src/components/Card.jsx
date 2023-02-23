@@ -40,14 +40,15 @@ const Card = ({_id, name, prompt, photo}) => {
               <button
                   className='outline-none, bg-transparent border-none'
                   type='button'
-                  onClick={() => downloadImage(_id, photo[0])}
+                  onClick={() => {
+                      photo.forEach(photoUrl => downloadImage(_id, photoUrl))
+                  }}
               >
                   <img src={download}
                       alt='download'
                       className='w-6 h-6 object-contain invert'
                   />
               </button>
-              
           </div>
       </div>
     </div>
