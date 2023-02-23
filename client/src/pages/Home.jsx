@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Loader, Card, FormField, Hero } from '../components';
 
+
 const RenderCards = ({ data, title, showMore, setShowMore }) => {
-  const [limit, setLimit] = useState(5);
+  const [limit, setLimit] = useState(10);
 
   const handleShowMore = () => {
     setLimit(limit + 5);
@@ -99,7 +100,9 @@ const Home = () => {
 
             return (
 
+
                 <section className="max-w-7xl mx-auto">
+
                     <Hero />
                     
 
@@ -170,6 +173,8 @@ const Home = () => {
                             )}
 
                         </div>
+
+                        
                     </div>
 
                 
