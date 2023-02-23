@@ -105,9 +105,11 @@ const Home = () => {
 
                     <Hero />
                     
+                    <div data-mndazid="2562f68d-6aca-4298-b221-a32fb5b7f2a6"></div>
 
                     
-                    <div className='border-4 border-[#000050] mt-5 rounded-md px-5 p-5'>
+                <div data-mndazid="2562f68d-6aca-4298-b221-a32fb5b7f2a6"
+                  className='border-4 border-[#000050] mt-5 rounded-md px-5 p-5'>
                         
                         <div className='border-b-2  border-[#185ed5]'>
 
