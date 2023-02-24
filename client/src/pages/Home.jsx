@@ -103,12 +103,8 @@ const Home = () => {
 
                 <section className="max-w-7xl mx-auto">
 
-                    <Hero />
-                    
-                    
-              <div id="container-edeaac44da5a21b18aea9bdc07ef5e03"></div>
-
-                    
+                    <Hero />                    
+                                 
                 <div className='border-4 border-[#000050] mt-5 rounded-md px-5 p-5'>
                         
                         <div className='border-b-2  border-[#185ed5]'>
@@ -179,7 +175,7 @@ const Home = () => {
                         
                     </div>
 
-                    
+                    <div id="container-edeaac44da5a21b18aea9bdc07ef5e03"></div>
                 
                 </section>
 
